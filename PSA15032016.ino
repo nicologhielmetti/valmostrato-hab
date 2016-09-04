@@ -4,9 +4,8 @@
 
 String GNGGA         = String();
 String PUBX          = String();
-String GNGGAtoSend   = String();
 String CGPSINF       = String();
-String CGPSINFtoSend = String();
+String INFOtoSend = String();
 byte   gps_set_sucess = 0;
 byte GPSIndex=0;
 bool check;
@@ -69,8 +68,7 @@ void send_GPRS(){
   //Serial2.print(CGPSINFtoSend);
   //Serial2.println(GNGGAtoSend);
   Serial.print("AT+HTTPPARA=\"URL\",\"http://valmostrato.ddns.net:6789/");
-  Serial.print(CGPSINFtoSend);
-  Serial.print(GNGGAtoSend);
+  Serial.print(INFOtoSend);
   //Serial.print(PUBX);
   Serial.println("\"");
   delay(2000);
@@ -243,20 +241,18 @@ void readUbloxString()
     Serial1.readStringUntil('X');
     PUBX = Serial1.readStringUntil('*');
   }
-  Serial2.print("GNGGA : ");
-  Serial2.println(GNGGAtoSend);
-  Serial2.print("PUBX : ");
-  Serial2.println(PUBX);
-  Serial2.println();
 }
 
 void saveData()
 {
     Test.open("CGPSINF.CSV", O_RDWR | O_CREAT | O_AT_END);
-    Test.println(CGPSINFtoSend);
+    Test.println(CGPSINF);
     Test.close();
     Test.open("GNGGA.CSV", O_RDWR | O_CREAT | O_AT_END);
-    Test.println(GNGGAtoSend);
+    Test.println(GNGGA);
+    Test.close();
+    Test.open("PUBX.CSV", O_RDWR | O_CREAT | O_AT_END);
+    Test.println(PUBX);
     Test.close();
 }
 
@@ -282,13 +278,14 @@ String findStr(String str, int virgolaIn, int virgolaFin)
 }
 
   
-void findUBloxToSend(){
-  GNGGAtoSend =  findStr(GNGGA,1,3);
-  GNGGAtoSend += findStr(GNGGA,4,5);
-  GNGGAtoSend += findStr(GNGGA,6,8);
-  GNGGAtoSend += findStr(GNGGA,7,8);
-  GNGGAtoSend += findStr(GNGGA,9,10);
-  GNGGAtoSend += findStr(PUBX,13,14);
+void composeStringToSend(){
+  INFOtoSend =  findStr(GNGGA,1,3);
+  INFOtoSend += findStr(GNGGA,4,5);
+  INFOtoSend += findStr(GNGGA,6,8);
+  INFOtoSend += findStr(GNGGA,9,10);
+  INFOtoSend += findStr(PUBX,13,14);
+  INFOtoSend += findStr(CGPSINF,1,8);
+  INFOtoSend += findStr(CGPSINF,9,11);
 }
 
 void readFromGPS(){
@@ -299,11 +296,8 @@ void readFromGPS(){
     delay(100);
     Serial.readStringUntil('0');
     Serial.readStringUntil(',');
-    CGPSINFtoSend = Serial.readStringUntil('\r');
-  } while (CGPSINFtoSend.length() == 1);
-  //CGPSINFtoSend =  findStr(CGPSINF,1,8);
-  //CGPSINFtoSend += findStr(CGPSINF,7,8);
-  //CGPSINFtoSend += findStr(CGPSINF,9,11);
+    CGPSINF = Serial.readStringUntil('\r');
+  } while (CGPSINF.length() == 1);
 }
 /*
 void readFromGPS()
@@ -395,11 +389,10 @@ void readSensors()
   //allSensors += (analogRead(A5)*5.03/1023)/(3.2/13.2);
   allSensors += ",";
   allSensors += 44330*(1 - pow(( ((analogRead(A4) - 102.4)/ 819.2)* 103421.359 / 101325),(1/5.255)));
-  GNGGAtoSend += ",";
-  GNGGAtoSend += allSensors;
+  INFOtoSend += allSensors;
 }
 
-int8_t sendATcommand2(char* ATcommand, char* expected_answer1, char* expected_answer2, unsigned int timeout) {
+/*int8_t sendATcommand2(char* ATcommand, char* expected_answer1, char* expected_answer2, unsigned int timeout) {
   uint8_t x=0,  answer=0;
   char response[100]; //100
   unsigned long previous;
@@ -422,15 +415,6 @@ int8_t sendATcommand2(char* ATcommand, char* expected_answer1, char* expected_an
     }
   } while((answer == 0) && ((millis() - previous) < timeout)); // Waits for the asnwer with time out
   return answer;
-}
-
-/*void cleanString(){
-  for(int i = 0; i < GNGGAtoSend.length(); ++i)
-    if(GNGGAtoSend[i] == '$'){
-       GNGGAtoSend = GNGGAtoSend.substring(i+6,GNGGAtoSend.length());
-      return;  
-    }
-        
 }*/
 
 void setup()
@@ -470,12 +454,18 @@ void loop()
 {
   readFromGPS(); //leggere i dati dal GPS eliminando l'ultimo campo + le cifre decimali del tempo e della velocità.
   readUbloxString();
-  findUBloxToSend();
-  readSensors();  //leggere i dati da tutti i sensori: temperatura, pressione, voltaggio.
-  Serial2.print("Inf: ");
-  Serial2.println(CGPSINFtoSend);
+  Serial2.print("GNGGA : ");
+  Serial2.println(GNGGA);
+  Serial2.print("PUBX : ");
+  Serial2.println(PUBX);
+  Serial2.print("CGPSINF : ");
+  Serial2.println(CGPSINF);
   Serial2.println();
-  //cleanString();
+  composeStringToSend();
+  Serial2.print("TOSEND : ");
+  Serial2.println(INFOtoSend);
+  Serial2.println();
+  readSensors();  //leggere i dati da tutti i sensori: temperatura, pressione, voltaggio.
   saveData();    //salvataggio stringa su SD.
   send_GPRS();
 }
