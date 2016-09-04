@@ -233,14 +233,16 @@ void readUbloxString()
       GNGGA = Serial1.readStringUntil('*');
     }
   } while(GNGGA.length() <= 1);
-  while(Serial1.available()) Serial1.read();
-  Serial1.println("$PUBX,00*33");
-  delay(100);
-  while(Serial1.available())
-  {
-    Serial1.readStringUntil('X');
-    PUBX = Serial1.readStringUntil('*');
-  }
+  do{
+    while(Serial1.available()) Serial1.read();
+    Serial1.println("$PUBX,00*33");
+    delay(100);
+    while(Serial1.available())
+    {
+      Serial1.readStringUntil('X');
+      PUBX = Serial1.readStringUntil('*');
+    }
+  }while(PUBX.length() <= 1);
 }
 
 void saveData()
