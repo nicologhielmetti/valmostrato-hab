@@ -5,9 +5,9 @@
 String GNGGA         = String();
 String PUBX          = String();
 String CGPSINF       = String();
-String INFOtoSend = String();
+String allSensors    = String();
+String INFOtoSend    = String();
 byte   gps_set_sucess = 0;
-byte GPSIndex=0;
 bool check;
 SdFat sd;
 SdFile Test;
@@ -248,16 +248,20 @@ void readUbloxString()
 void saveData()
 {
     Test.open("CGPSINF.CSV", O_RDWR | O_CREAT | O_AT_END);
-    Test.print("$CGPSINF,");
+    Test.print("$CGPSINF");
     Test.println(CGPSINF);
     Test.close();
     Test.open("GNGGA.CSV", O_RDWR | O_CREAT | O_AT_END);
-    Test.print("$GNGGA,");
+    Test.print("$GNGGA");
     Test.println(GNGGA);
     Test.close();
     Test.open("PUBX.CSV", O_RDWR | O_CREAT | O_AT_END);
-    Test.print("$PUBX,");
+    Test.print("$PUBX");
     Test.println(PUBX);
+    Test.close();
+    Test.open("SENSORS.CSV", O_RDWR | O_CREAT | O_AT_END);
+    Test.print("$SENS");
+    Test.println();
     Test.close();
 }
 
@@ -378,7 +382,6 @@ float getAvgVbatt(){
 }
 void readSensors()
 {
-  String allSensors = String();
   OneWire temp(2);
   DallasTemperature _Temp(&temp);
   _Temp.begin();
