@@ -242,18 +242,21 @@ void readUbloxString()
       Serial1.readStringUntil('X');
       PUBX = Serial1.readStringUntil('*');
     }
-  }while(PUBX.length() <= 1);
+  } while(PUBX.length() <= 1);
 }
 
 void saveData()
 {
     Test.open("CGPSINF.CSV", O_RDWR | O_CREAT | O_AT_END);
+    Test.print("$CGPSINF,");
     Test.println(CGPSINF);
     Test.close();
     Test.open("GNGGA.CSV", O_RDWR | O_CREAT | O_AT_END);
+    Test.print("$GNGGA,");
     Test.println(GNGGA);
     Test.close();
     Test.open("PUBX.CSV", O_RDWR | O_CREAT | O_AT_END);
+    Test.print("$PUBX,");
     Test.println(PUBX);
     Test.close();
 }
@@ -287,7 +290,7 @@ void composeStringToSend(){
   INFOtoSend += findStr(GNGGA,9,10);
   INFOtoSend += findStr(PUBX,13,14);
   INFOtoSend += findStr(CGPSINF,1,8);
-  INFOtoSend += findStr(CGPSINF,9,11);
+  //INFOtoSend += findStr(CGPSINF,9,11);
 }
 
 void readFromGPS(){
@@ -300,6 +303,8 @@ void readFromGPS(){
     Serial.readStringUntil(',');
     CGPSINF = Serial.readStringUntil('\r');
   } while (CGPSINF.length() == 1);
+  CGPSINF = ',' + CGPSINF;
+  
 }
 /*
 void readFromGPS()
