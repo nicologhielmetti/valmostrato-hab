@@ -10,7 +10,6 @@ String CGPSINFtoSend = String();
 byte   gps_set_sucess = 0;
 byte GPSIndex=0;
 bool check;
-bool gnggacheck = false;
 SdFat sd;
 SdFile Test;
 
