@@ -10,23 +10,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
-            android:id="@+id/nsat"
+            android:id="@+id/velocità_vert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView
-            android:id="@+id/velocità"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/temperaturaInt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/temperaturaExt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <TextView
-            android:id="@+id/pressione"
+            android:id="@+id/velocità_oriz"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
         <TextView

@@ -62,7 +62,7 @@ public class MapsActivity extends FragmentActivity
             {
                 try
                 {
-                    URL url = new URL("http://valmostrato.altervista.org/lastpos.txt");
+                    URL url = new URL("http://valmostrato.ddns.net/lastpos.txt");
                     BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "US-ASCII"));
                     positionString = in.readLine();
                 }
@@ -101,23 +101,17 @@ public class MapsActivity extends FragmentActivity
                                     {
                                         markerWindow = getLayoutInflater().inflate(R.layout.my_layout,null);
                                         TextView altezza        = (TextView)markerWindow.findViewById(R.id.altezza);
-                                        TextView nsat           = (TextView)markerWindow.findViewById(R.id.nsat);
-                                        TextView velocità       = (TextView)markerWindow.findViewById(R.id.velocità);
-                                        TextView temperaturaInt = (TextView)markerWindow.findViewById(R.id.temperaturaInt);
-                                        TextView temperaturaExt = (TextView)markerWindow.findViewById(R.id.temperaturaExt);
-                                        TextView pressione      = (TextView)markerWindow.findViewById(R.id.pressione);
+                                        TextView velocità_vert  = (TextView)markerWindow.findViewById(R.id.velocità_vert);
+                                        TextView velocità_oriz  = (TextView)markerWindow.findViewById(R.id.velocità_oriz);
                                         TextView voltaggio      = (TextView)markerWindow.findViewById(R.id.voltaggio);
                                         TextView giorno         = (TextView)markerWindow.findViewById(R.id.giorno);
                                         TextView ora            = (TextView)markerWindow.findViewById(R.id.ora);
                                         altezza.setText         ("Altezza : " + myArrayString[2] + " m");
-                                        nsat.setText            ("Numero satelitti : " + myArrayString[5]);
-                                        velocità.setText        ("Velocità : " + myArrayString[6] + " km/h");
-                                        temperaturaInt.setText  ("Temperatura interna : " + myArrayString[7] + " °C");
-                                        temperaturaExt.setText  ("Temperatura esterna : " + myArrayString[8] + " °C");
-                                        pressione.setText       ("Pressione : " + myArrayString[9] + " hPa");
-                                        voltaggio.setText       ("Voltaggio batteria : " + myArrayString[10] + " V");
-                                        giorno.setText          ("Giorno : " + myArrayString[3]);
-                                        ora.setText             ("Ora : " + myArrayString[4]);
+                                        velocità_oriz.setText   ("V. verticale : " + myArrayString[3] + " km/h");
+                                        velocità_vert.setText   ("V. orizzontale : " + myArrayString[4] + " km/h");
+                                        voltaggio.setText       ("Voltaggio batteria : " + myArrayString[5] + " V");
+                                        giorno.setText          ("Giorno : " + myArrayString[6]);
+                                        ora.setText             ("Ora : " + myArrayString[7]);
                                         return markerWindow;
                                     }
                                 });

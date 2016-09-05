@@ -260,7 +260,7 @@ void saveData()
     Test.println(PUBX);
     Test.close();
     Test.open("SENSORS.CSV", O_RDWR | O_CREAT | O_AT_END);
-    Test.print("$SENS");
+    Test.print("$SENS,");
     Test.println(allSensors);
     Test.close();
 }
@@ -294,7 +294,6 @@ void composeStringToSend(){
   INFOtoSend += findStr(GNGGA,9,11);
   INFOtoSend += findStr(PUBX,13,14);
   INFOtoSend += findStr(CGPSINF,1,8);
-  //INFOtoSend += findStr(CGPSINF,9,11);
 }
 
 void readFromGPS(){
@@ -380,6 +379,7 @@ float getAvgVbatt(){
   sum /= 50;
   return ((sum*5.03/1023)/(3.2/13.2));
 }
+
 void readSensors()
 {
   OneWire temp(2);
@@ -394,9 +394,7 @@ void readSensors()
   allSensors += ",";
   allSensors += ((analogRead(A4) - 102.4)/ 819.2)* 103421.359;
   allSensors += ",";
-  //allSensors += fmap(analogRead(A5),402,494, 11.10, 12.62);
   allSensors += getAvgVbatt();
-  //allSensors += (analogRead(A5)*5.03/1023)/(3.2/13.2);
   allSensors += ",";
   allSensors += 44330*(1 - pow(( ((analogRead(A4) - 102.4)/ 819.2)* 103421.359 / 101325),(1/5.255)));
   INFOtoSend += allSensors;
