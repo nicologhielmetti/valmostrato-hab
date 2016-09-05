@@ -306,7 +306,7 @@ void readFromGPS(){
     Serial.readStringUntil('0');
     Serial.readStringUntil(',');
     CGPSINF = Serial.readStringUntil('\r');
-  } while (CGPSINF.length() == 1);
+  } while (CGPSINF.length() <= 5);
   CGPSINF = ',' + CGPSINF;
   
 }
