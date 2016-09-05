@@ -106,7 +106,7 @@ public class MapsActivity extends FragmentActivity
                                         TextView voltaggio      = (TextView)markerWindow.findViewById(R.id.voltaggio);
                                         TextView giorno         = (TextView)markerWindow.findViewById(R.id.giorno);
                                         TextView ora            = (TextView)markerWindow.findViewById(R.id.ora);
-                                        altezza.setText         ("Altezza : " + myArrayString[2] + " m");
+                                        altezza.setText         ( "Altezza : " + myArrayString[2] + " m");
                                         velocità_oriz.setText   ("V. verticale : " + myArrayString[3] + " km/h");
                                         velocità_vert.setText   ("V. orizzontale : " + myArrayString[4] + " km/h");
                                         voltaggio.setText       ("Voltaggio batteria : " + myArrayString[5] + " V");
