@@ -37,23 +37,27 @@ public class TCPServer {
         DataOutputStream outToClient;
         BufferedReader inFromClient;
         System.out.println("Valmostrato Server on port: " + port + " is ON\n");
-        while (true){
+        while (true) {
             connectionSocket = welcomeSocket.accept(); 
             inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream())); 
             outToClient = new DataOutputStream(connectionSocket.getOutputStream());
-            try{
+            try {
                 String clientSentence = inFromClient.readLine();
                 try {
-                   HabString hs = new HabString(clientSentence);
-                   
-                   // Writing on log.txt file
+                    
+                    // Writing on log.txt file
                     writeOnLogFile(clientSentence);
-                   
-                   // Writing on data.txt file 
-                    writeOnDataFile(hs.getCleanString());
-                   
-                   // Updating lastpos.txt file
-                    writeOnLastposFile(hs.getLatPositionString());
+                    
+                    if (checkString(clientSentence)) {
+                        clientSentence = "invalid data - " + clientSentence;
+                    }
+                    else {
+                        HabString hs = new HabString(clientSentence);
+                        // Writing on data.txt file 
+                        writeOnDataFile(hs.getCleanString());
+                        // Updating lastpos.txt file
+                        writeOnLastposFile(hs.getLatPositionString());
+                    }
                    
                    System.out.println("FROM CLIENT = " + clientSentence + "\n");
                    
@@ -94,5 +98,20 @@ public class TCPServer {
     }
     
 ////////////////////////////////////////////////////////////////////////////////
+    
+    private boolean checkString(String clientSentence) {
+        int count = 0;
+        for (int i = 0; i < clientSentence.length(); i++) {
+            if (clientSentence.charAt(i) == ',') {
+                count++;
+            }
+        }
+        if (count != 20) {
+            return true;
+        }
+        return false;
+    }
+    
+////////////////////////////////////////////////////////////////////////////////    
     
 }

@@ -30,16 +30,10 @@ public class HabString {
     private final String voltage;
     private final String altitudeByPressure;
     
-    private boolean error;
-    
-    
 ////////////////////////////////////////////////////////////////////////////////    
     
     public HabString(String data) {
-        error = false;
-        if (!(data.substring(0, 3).equals("POST"))) {
-            error = true;
-        }
+
         data = data.substring(6, data.length()-9);
         String[] splittedData = data.split(",");
         
@@ -49,28 +43,28 @@ public class HabString {
         ubloxFixQuality = splittedData[3];
         ubloxSat = splittedData[4];
         ubloxAltitude = splittedData[5];
-        ubloxVerticalSpeed = splittedData[6];
+        ubloxVerticalSpeed = splittedData[7];
         
-        dfrobotLongitude = cordinatesConversion(splittedData[7]);
-        dfrobotLatitude = cordinatesConversion(splittedData[8]);
-        dfrobotAltitude = splittedData[9];
-        dfrobotTime = splittedData[10];
-        dfrobotTTF = splittedData[11];
-        dfrobotSat = splittedData[12];
-        dfrobotSpeed = splittedData[13];
+        dfrobotLongitude = cordinatesConversion(splittedData[8]);
+        dfrobotLatitude = cordinatesConversion(splittedData[9]);
+        dfrobotAltitude = splittedData[10];
+        dfrobotTime = splittedData[11];
+        dfrobotTTF = splittedData[12];
+        dfrobotSat = splittedData[13];
+        dfrobotSpeed = splittedData[14];
         
-        temperature1 = splittedData[14];
-        temperature2 = splittedData[15];
-        pressure1 = splittedData[16];
-        pressure2 = splittedData[17];
-        voltage = splittedData[18];
-        altitudeByPressure = splittedData[19];
+        temperature1 = splittedData[15];
+        temperature2 = splittedData[16];
+        pressure1 = splittedData[17];
+        pressure2 = splittedData[18];
+        voltage = splittedData[19];
+        altitudeByPressure = splittedData[20];
     }
     
 ////////////////////////////////////////////////////////////////////////////////
     
     private String cordinatesConversion(String cordinate) {
-        if (cordinate.equals("0.000000"))
+        if ((cordinate.equals("0.000000")) || (cordinate.equals("")))
             return "0.000000";
         else
         {
@@ -93,30 +87,25 @@ public class HabString {
 ////////////////////////////////////////////////////////////////////////////////    
     
     public String getLatPositionString() {
-        if (error == false) {
-            return dfrobotLatitude + "," + dfrobotLongitude + "," + 
-                   ubloxAltitude + "," + dfrobotSpeed + "," + 
-                   ubloxVerticalSpeed + "," + voltage;
-        }
-        return "";
+        return dfrobotLatitude + "," + dfrobotLongitude + "," + 
+               ubloxAltitude + "," + dfrobotSpeed + "," + 
+               ubloxVerticalSpeed + "," + voltage;
+
     }
 
 ////////////////////////////////////////////////////////////////////////////////    
     
     public String getCleanString() {
-        if (error == false) {
-            return ubloxTime + "," + ubloxLatitude + "," + ubloxLongitude + "," +
-                   ubloxFixQuality + "," + ubloxSat + "," + ubloxAltitude + "," +
-                   ubloxVerticalSpeed + "," + dfrobotLatitude + "," + 
-                   dfrobotLongitude + "," + dfrobotAltitude + "," +
-                   dfrobotTime + "," + dfrobotTTF + "," + dfrobotSat + "," +
-                   dfrobotSpeed + "," + temperature1 + "," + temperature2 + "," +
-                   pressure1 + "," + pressure2 + "," + voltage + "," +
-                   altitudeByPressure;
-        }
-        return "";
+        return ubloxTime + "," + ubloxLatitude + "," + ubloxLongitude + "," +
+               ubloxFixQuality + "," + ubloxSat + "," + ubloxAltitude + "," +
+               ubloxVerticalSpeed + "," + dfrobotLatitude + "," + 
+               dfrobotLongitude + "," + dfrobotAltitude + "," +
+               dfrobotTime + "," + dfrobotTTF + "," + dfrobotSat + "," +
+               dfrobotSpeed + "," + temperature1 + "," + temperature2 + "," +
+               pressure1 + "," + pressure2 + "," + voltage + "," +
+               altitudeByPressure;
     }
     
-////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////    
     
 }
