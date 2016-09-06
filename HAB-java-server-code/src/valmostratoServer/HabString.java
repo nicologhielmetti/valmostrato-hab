@@ -13,6 +13,7 @@ public class HabString {
     private final String ubloxFixQuality;
     private final String ubloxSat;
     private final String ubloxAltitude;
+    private final String ubloxAltitudeM;
     private final String ubloxVerticalSpeed;
     
     private final String dfrobotLongitude;
@@ -35,39 +36,40 @@ public class HabString {
     public HabString(String data) {
 
         data = data.substring(6, data.length()-9);
-        String[] splittedData = data.split(",");
+        String[] splitData = data.split(",");
         
-        ubloxTime = splittedData[0];
-        ubloxLatitude = cordinatesConversion(splittedData[1]);
-        ubloxLongitude = cordinatesConversion(splittedData[2]);
-        ubloxFixQuality = splittedData[3];
-        ubloxSat = splittedData[4];
-        ubloxAltitude = splittedData[5];
-        ubloxVerticalSpeed = splittedData[7];
+        ubloxTime = splitData[0];
+        ubloxLatitude = cordinatesConversion(splitData[1]);
+        ubloxLongitude = cordinatesConversion(splitData[2]);
+        ubloxFixQuality = splitData[3];
+        ubloxSat = splitData[4];
+        ubloxAltitude = splitData[5];
+        ubloxAltitudeM = splitData[6];
+        ubloxVerticalSpeed = String.valueOf((Double.parseDouble(splitData[7])) * 3.6); // m/s --> km/h
         
-        dfrobotLongitude = cordinatesConversion(splittedData[8]);
-        dfrobotLatitude = cordinatesConversion(splittedData[9]);
-        dfrobotAltitude = splittedData[10];
-        dfrobotTime = splittedData[11];
-        dfrobotTTF = splittedData[12];
-        dfrobotSat = splittedData[13];
-        dfrobotSpeed = splittedData[14];
+        dfrobotLongitude = cordinatesConversion(splitData[8]);
+        dfrobotLatitude = cordinatesConversion(splitData[9]);
+        dfrobotAltitude = splitData[10];
+        splitData[11] = splitData[11].substring(0,13);
+        dfrobotTime = splitData[11];
+        dfrobotTTF = splitData[12];
+        dfrobotSat = splitData[13];
+        dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[14])) * 3.6); // m/s --> km/h
         
-        temperature1 = splittedData[15];
-        temperature2 = splittedData[16];
-        pressure1 = splittedData[17];
-        pressure2 = splittedData[18];
-        voltage = splittedData[19];
-        altitudeByPressure = splittedData[20];
+        temperature1 = splitData[15];
+        temperature2 = splitData[16];
+        pressure1 = splitData[17];
+        pressure2 = splitData[18];
+        voltage = splitData[19];
+        altitudeByPressure = splitData[20];
     }
     
 ////////////////////////////////////////////////////////////////////////////////
     
     private String cordinatesConversion(String cordinate) {
-        if ((cordinate.equals("0.000000")) || (cordinate.equals("")))
+        if ((cordinate.equals("0.000000")) || (cordinate.equals(""))) {
             return "0.000000";
-        else
-        {
+        } else {
             int i = 0;
             while (cordinate.charAt(i) != '.') { i++; }
             float result = (10 * ((float)(cordinate.charAt(i-2) - 48))) 
@@ -86,10 +88,21 @@ public class HabString {
     
 ////////////////////////////////////////////////////////////////////////////////    
     
-    public String getLatPositionString() {
-        return dfrobotLatitude + "," + dfrobotLongitude + "," + 
-               ubloxAltitude + "," + dfrobotSpeed + "," + 
-               ubloxVerticalSpeed + "," + voltage;
+    public String getLatPositionString(String lastValidData) {
+        if (dfrobotLatitude.equals("0.000000")) { //if this is true also longitude, altitude and time are invalid (no fix)
+            String[] data = lastValidData.split(",");
+            data[data.length - 1] = voltage;
+            lastValidData = "";
+            for (int i = 0; i < data.length; i++) {
+                lastValidData += data[i]; 
+            }
+            return lastValidData;
+        } else {
+            return dfrobotLatitude + "," + dfrobotLongitude + "," + 
+                   ubloxAltitude + "," +ubloxAltitudeM + "," + 
+                   dfrobotSpeed + "," + ubloxVerticalSpeed + "," + 
+                   dfrobotTime + "," + voltage;
+        }
 
     }
 
@@ -98,12 +111,33 @@ public class HabString {
     public String getCleanString() {
         return ubloxTime + "," + ubloxLatitude + "," + ubloxLongitude + "," +
                ubloxFixQuality + "," + ubloxSat + "," + ubloxAltitude + "," +
-               ubloxVerticalSpeed + "," + dfrobotLatitude + "," + 
-               dfrobotLongitude + "," + dfrobotAltitude + "," +
-               dfrobotTime + "," + dfrobotTTF + "," + dfrobotSat + "," +
-               dfrobotSpeed + "," + temperature1 + "," + temperature2 + "," +
-               pressure1 + "," + pressure2 + "," + voltage + "," +
-               altitudeByPressure;
+               ubloxAltitudeM + "," + ubloxVerticalSpeed + "," + 
+               dfrobotLatitude + "," + dfrobotLongitude + "," + 
+               dfrobotAltitude + "," + dfrobotTime + "," + dfrobotTTF + "," + 
+               dfrobotSat + "," + dfrobotSpeed + "," + temperature1 + "," + 
+               temperature2 + "," + pressure1 + "," + pressure2 + "," + 
+               voltage + "," + altitudeByPressure;
+    }
+    
+////////////////////////////////////////////////////////////////////////////////
+    
+    private String getDateAndTime(String DateAndTime)
+    {
+        if (DateAndTime.length() == 14) {
+            DateAndTime = DateAndTime.substring(0,13);
+            String fixedString = DateAndTime.substring(0, 7);
+            fixedString += String.valueOf(Integer.valueOf(DateAndTime.substring(8, 10)) + 2);
+            fixedString += DateAndTime.substring(11, DateAndTime.length());
+            return fixedString;
+        } else {
+            if (!(DateAndTime.equals(""))) {
+                String fixedString = String.valueOf(Integer.valueOf(DateAndTime.substring(0, 1)) + 2);
+                fixedString += DateAndTime.substring(11, DateAndTime.length());
+                return fixedString;
+            } else {
+                return "000000";
+            }
+        }
     }
     
 ////////////////////////////////////////////////////////////////////////////////    
