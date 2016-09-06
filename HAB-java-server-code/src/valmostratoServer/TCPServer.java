@@ -1,5 +1,5 @@
 
-// valmostrato server - last edit on 05/09/2016
+// valmostrato server - last edit on 06/09/2016
 
 package valmostratoServer;
 
@@ -36,7 +36,11 @@ public class TCPServer {
         Socket connectionSocket;
         DataOutputStream outToClient;
         BufferedReader inFromClient;
+        
+        String lastValidData = "0.000000,0.000000,,M,0.000000,0.000,10.85";
+        
         System.out.println("Valmostrato Server on port: " + port + " is ON\n");
+        
         while (true) {
             connectionSocket = welcomeSocket.accept(); 
             inFromClient = new BufferedReader(new InputStreamReader(connectionSocket.getInputStream())); 
@@ -55,8 +59,10 @@ public class TCPServer {
                         HabString hs = new HabString(clientSentence);
                         // Writing on data.txt file 
                         writeOnDataFile(hs.getCleanString());
-                        // Updating lastpos.txt file
-                        writeOnLastposFile(hs.getLatPositionString());
+                        // Updating lastpos.txt file and save in ram as the last
+                        // valid data received
+                        lastValidData = hs.getLatPositionString(lastValidData);
+                        writeOnLastposFile(lastValidData);
                     }
                    
                    System.out.println("FROM CLIENT = " + clientSentence + "\n");
