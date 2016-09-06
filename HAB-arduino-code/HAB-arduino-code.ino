@@ -7,6 +7,9 @@ String PUBX          = String();
 String CGPSINF       = String();
 String allSensors    = String();
 String INFOtoSend    = String();
+bool gnggaCheck = true;
+bool pubxCheck = true;
+bool cgpsinfCheck = true;
 byte   gps_set_sucess = 0;
 bool check;
 SdFat sd;
@@ -72,7 +75,7 @@ void send_GPRS(){
   //Serial.print(PUBX);
   Serial.println("\"");
   delay(2000);
-  Serial.println("AT+HTTPACTION=1"); //now GET action
+  Serial.println("AT+HTTPACTION=1"); //now POST action
   delay(2000);        
 }
 
@@ -222,29 +225,6 @@ void initUbloxGPS()
    }
 }
 
-void readUbloxString() 
-{
-  do{
-    while(Serial1.available()) Serial1.read();
-    while(!Serial1.available());
-    while(Serial1.available())
-    {
-      Serial1.readStringUntil('A');
-      GNGGA = Serial1.readStringUntil('*');
-    }
-  } while(GNGGA.length() <= 1);
-  do{
-    while(Serial1.available()) Serial1.read();
-    Serial1.println("$PUBX,00*33");
-    delay(100);
-    while(Serial1.available())
-    {
-      Serial1.readStringUntil('X');
-      PUBX = Serial1.readStringUntil('*');
-    }
-  } while(PUBX.length() <= 1);
-}
-
 void saveData()
 {
     Test.open("CGPSINF.CSV", O_RDWR | O_CREAT | O_AT_END);
@@ -259,10 +239,18 @@ void saveData()
     Test.print("$PUBX");
     Test.println(PUBX);
     Test.close();
-    Test.open("SENSORS.CSV", O_RDWR | O_CREAT | O_AT_END);
+    Test.open("SENS.CSV", O_RDWR | O_CREAT | O_AT_END);
     Test.print("$SENS,");
     Test.println(allSensors);
     Test.close();
+}
+
+bool checkStr(const String& str, int nVirgole){
+  int count = 0;
+  for(int i=0; i < str.length(); ++i)
+    if(str[i] == ',')
+      ++count;
+  return count >= nVirgole;
 }
 
 String findStr(String str, int virgolaIn, int virgolaFin)
@@ -288,12 +276,52 @@ String findStr(String str, int virgolaIn, int virgolaFin)
 
   
 void composeStringToSend(){
-  INFOtoSend =  findStr(GNGGA,1,3);
-  INFOtoSend += findStr(GNGGA,4,5);
-  INFOtoSend += findStr(GNGGA,6,8);
-  INFOtoSend += findStr(GNGGA,9,11);
-  INFOtoSend += findStr(PUBX,13,14);
-  INFOtoSend += findStr(CGPSINF,1,8);
+  if(gnggaCheck) {
+    INFOtoSend =  findStr(GNGGA,1,3);
+    INFOtoSend += findStr(GNGGA,4,5);
+    INFOtoSend += findStr(GNGGA,6,8);
+    INFOtoSend += findStr(GNGGA,9,11);
+  } else
+    INFOtoSend = GNGGA;
+  if (pubxCheck)
+    INFOtoSend += findStr(PUBX,13,14);
+  else
+    INFOtoSend += PUBX;
+  if(cgpsinfCheck)
+    INFOtoSend += findStr(CGPSINF,1,8);
+  else
+    INFOtoSend += CGPSINF;
+}
+
+void readUbloxString() 
+{
+  do{
+    while(Serial1.available()) Serial1.read();
+    while(!Serial1.available());
+    while(Serial1.available())
+    {
+      Serial1.readStringUntil('A');
+      GNGGA = Serial1.readStringUntil('*');
+    }
+  } while(GNGGA.length() <= 1);
+  if(!checkStr(GNGGA,14)){
+    GNGGA = ",ERROR-GNGGA";
+    gnggaCheck = false;    
+  }
+  do{
+    while(Serial1.available()) Serial1.read();
+    Serial1.println("$PUBX,00*33");
+    delay(100);
+    while(Serial1.available())
+    {
+      Serial1.readStringUntil('X');
+      PUBX = Serial1.readStringUntil('*');
+    }
+  } while(PUBX.length() <= 1);
+  if(!checkStr(PUBX,21)){
+    PUBX = ",ERROR-PUBX";
+    pubxCheck = false;    
+  }
 }
 
 void readFromGPS(){
@@ -305,65 +333,14 @@ void readFromGPS(){
     Serial.readStringUntil('0');
     Serial.readStringUntil(',');
     CGPSINF = Serial.readStringUntil('\r');
-  } while (CGPSINF.length() <= 5);
+  } while (CGPSINF == "600");
   CGPSINF = ',' + CGPSINF;
+  if(!checkStr(CGPSINF,8)){
+    CGPSINF = ",ERROR-CGPSINF";
+    cgpsinfCheck = false;
+  }
   
 }
-/*
-void readFromGPS()
-{
-  int  i_chr=0;
-  int cont=0; //dichiarazione variabili.
-  char c_chr;
-
-  memset(stringToSend, '\0', 100); //inizializzazione stringToSend a \0
-  delay(100);
-  while(Serial.available()) Serial.read(); //svuotamento buffer seriale
-  Serial.println("AT+CGPSINF=0");  //invio comando per info gps
-  delay(1000);
-  do
-  {
-    c_chr = Serial.read();
-    stringToSend[cont] = c_chr;
-    cont++;
-  }while(c_chr == '\r');
-  while(Serial.read() != ','); //lettura caratteri fino alla virgola scartandoli
-  
-  i_chr = 0;  //inizializzazione variabili contatori
-  cont  = 0;
-  
-  while(i_chr < 3) //condizione: finchè non legge la terza virgola salva i caratteri in stringToSend 
-  {
-    c_chr = Serial.read(); //assegnazione a c_chr il carattere letto dalla seriale
-    if (c_chr == ',')  //se il carattere è una virgola incremento il contatore
-      i_chr++;
-    stringToSend[cont] = c_chr; //salvo il stringToSend
-    cont++;  //incremento il contatore associato a stringToSend
-  }
-  
-  while(i_chr < 7) //condizione: finchè non legge la settima virgola
-  {
-    c_chr = Serial.read(); //leggo il carattere in c_chr
-    if ((c_chr == '.') && (i_chr == 3))  //se il carattere è . e siamo alla terza virgola allora scartiamo tutti i caratteri nella seriale fino alla quinta virgola
-    {
-      while(i_chr < 5) //finchè non legge la quinta virgola
-      {
-        c_chr = Serial.read(); //scarta il carattere
-        if (c_chr == ',')  //se è una virgola incrementa il contatore associato
-          i_chr++;
-      }
-      stringToSend[cont] = ','; //poichè l'ultimo carattere scartato è la virgola (utile alla condizione che incrementa il contatore) viene assegnato come ultimo carattere la virgola
-      cont++;  //incremento contatore associato a stringToSend
-    }
-    else
-    {
-      stringToSend[cont] = c_chr; //salvataggio in stringToSend
-      cont++;  //incremento contatore associato a stringToSend
-      if(c_chr == ',') //se il carattere letto è una virgola allora incremento il contatore associato
-        i_chr++;
-    }
-  }
-}*/
 
 float fmap(float x, float in_min, float in_max, float out_min, float out_max)
 {
@@ -399,31 +376,6 @@ void readSensors()
   allSensors += 44330*(1 - pow(( ((analogRead(A4) - 102.4)/ 819.2)* 103421.359 / 101325),(1/5.255)));
   INFOtoSend += allSensors;
 }
-
-/*int8_t sendATcommand2(char* ATcommand, char* expected_answer1, char* expected_answer2, unsigned int timeout) {
-  uint8_t x=0,  answer=0;
-  char response[100]; //100
-  unsigned long previous;
-  memset(response, '\0', 100);    // Initialize the string
-  delay(100);
-  while( Serial.available() > 0) Serial.read();    // Clean the input buffer
-  Serial.println(ATcommand);    // Send the AT command 
-  x = 0;
-  previous = millis();
-  do   // this loop waits for the answer
-  {
-    if (Serial.available() != 0) // if there are data in the UART input buffer, reads it and checks for the asnwer
-    {    
-      response[x] = Serial.read();
-      x++;
-      if (strstr(response, expected_answer1) != NULL) // check if the desired answer 1  is in the response of the module
-        answer = 1;
-      else if (strstr(response, expected_answer2) != NULL) // check if the desired answer 2 is in the response of the module
-        answer = 2;
-    }
-  } while((answer == 0) && ((millis() - previous) < timeout)); // Waits for the asnwer with time out
-  return answer;
-}*/
 
 void setup()
 {
@@ -477,4 +429,3 @@ void loop()
   saveData();    //salvataggio stringa su SD.
   send_GPRS();
 }
-
