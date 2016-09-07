@@ -38,7 +38,7 @@ public class HabString {
         data = data.substring(6, data.length()-9);
         String[] splitData = data.split(",");
         
-        ubloxTime = getDateAndTime(splitData[0]);
+        ubloxTime = splitData[0];
         ubloxLatitude = cordinatesConversion(splitData[1]);
         ubloxLongitude = cordinatesConversion(splitData[2]);
         ubloxFixQuality = splitData[3];
@@ -50,7 +50,7 @@ public class HabString {
         dfrobotLongitude = cordinatesConversion(splitData[8]);
         dfrobotLatitude = cordinatesConversion(splitData[9]);
         dfrobotAltitude = splitData[10];;
-        dfrobotTime = getDateAndTime(splitData[11]);
+        dfrobotTime = splitData[11];
         dfrobotTTF = splitData[12];
         dfrobotSat = splitData[13];
         dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[14])) * 3.6); // m/s --> km/h
