@@ -55,12 +55,12 @@ public class HabString {
         dfrobotSat = splitData[13];
         dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[14])) * 3.6); // m/s --> km/h
         
-        temperature1 = splitData[15];
-        temperature2 = splitData[16];
-        pressure1 = splitData[17];
-        pressure2 = splitData[18];
-        voltage = splitData[19];
-        altitudeByPressure = splitData[20];
+        temperature1 = splitData[16];
+        temperature2 = splitData[17];
+        pressure1 = splitData[18];
+        pressure2 = splitData[19];
+        voltage = splitData[20];
+        altitudeByPressure = splitData[21];
     }
     
 ////////////////////////////////////////////////////////////////////////////////
