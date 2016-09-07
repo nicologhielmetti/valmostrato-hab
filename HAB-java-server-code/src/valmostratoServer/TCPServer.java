@@ -1,5 +1,5 @@
 
-// valmostrato server - last edit on 06/09/2016
+// valmostrato server - last edit on 07/09/2016
 
 package valmostratoServer;
 
@@ -54,8 +54,7 @@ public class TCPServer {
                     
                     if (checkString(clientSentence)) {
                         clientSentence = "invalid data - " + clientSentence;
-                    }
-                    else {
+                    } else {
                         HabString hs = new HabString(clientSentence);
                         // Writing on data.txt file 
                         writeOnDataFile(hs.getCleanString());
@@ -69,12 +68,10 @@ public class TCPServer {
                    
                    outToClient.writeBytes("OK");
                    connectionSocket.close();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                    System.out.println("ERROR\n"); 
                 }
-            }
-            catch (IOException e){ 
+            } catch (IOException e){ 
                 System.out.println("ERROR\n");
             }
         }

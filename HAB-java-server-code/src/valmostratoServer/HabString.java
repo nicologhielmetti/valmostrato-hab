@@ -1,5 +1,5 @@
 
-// valmostrato server - last edit on 06/09/2016
+// valmostrato server - last edit on 07/09/2016
 
 package valmostratoServer;
 
@@ -38,7 +38,7 @@ public class HabString {
         data = data.substring(6, data.length()-9);
         String[] splitData = data.split(",");
         
-        ubloxTime = splitData[0];
+        ubloxTime = getDateAndTime(splitData[0]);
         ubloxLatitude = cordinatesConversion(splitData[1]);
         ubloxLongitude = cordinatesConversion(splitData[2]);
         ubloxFixQuality = splitData[3];
@@ -49,9 +49,8 @@ public class HabString {
         
         dfrobotLongitude = cordinatesConversion(splitData[8]);
         dfrobotLatitude = cordinatesConversion(splitData[9]);
-        dfrobotAltitude = splitData[10];
-        splitData[11] = splitData[11].substring(0,13);
-        dfrobotTime = splitData[11];
+        dfrobotAltitude = splitData[10];;
+        dfrobotTime = getDateAndTime(splitData[11]);
         dfrobotTTF = splitData[12];
         dfrobotSat = splitData[13];
         dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[14])) * 3.6); // m/s --> km/h
