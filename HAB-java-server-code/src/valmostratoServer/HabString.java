@@ -1,5 +1,5 @@
 
-// valmostrato server - last edit on 07/09/2016
+// valmostrato server - last edit on 08/09/2016
 
 package valmostratoServer;
 
@@ -12,6 +12,7 @@ public class HabString {
     private final String ubloxLongitude;
     private final String ubloxFixQuality;
     private final String ubloxSat;
+    private final String ubloxHorizDil;
     private final String ubloxAltitude;
     private final String ubloxAltitudeM;
     private final String ubloxVerticalSpeed;
@@ -23,6 +24,7 @@ public class HabString {
     private final String dfrobotTTF;
     private final String dfrobotSat;
     private final String dfrobotSpeed;
+    private final String dfrobotCourse;
     
     private final String temperature1;
     private final String temperature2;
@@ -38,29 +40,31 @@ public class HabString {
         data = data.substring(6, data.length()-9);
         String[] splitData = data.split(",");
         
-        ubloxTime = splitData[0];
+        ubloxTime = getDateAndTime(splitData[0]);
         ubloxLatitude = cordinatesConversion(splitData[1]);
         ubloxLongitude = cordinatesConversion(splitData[2]);
         ubloxFixQuality = splitData[3];
         ubloxSat = splitData[4];
+        ubloxHorizDil = splitData[5];
         ubloxAltitude = splitData[5];
         ubloxAltitudeM = splitData[6];
         ubloxVerticalSpeed = String.valueOf((Double.parseDouble(splitData[7])) * 3.6); // m/s --> km/h
         
-        dfrobotLongitude = cordinatesConversion(splitData[8]);
-        dfrobotLatitude = cordinatesConversion(splitData[9]);
-        dfrobotAltitude = splitData[10];;
-        dfrobotTime = splitData[11];
-        dfrobotTTF = splitData[12];
-        dfrobotSat = splitData[13];
-        dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[14])) * 3.6); // m/s --> km/h
+        dfrobotLongitude = cordinatesConversion(splitData[9]);
+        dfrobotLatitude = cordinatesConversion(splitData[10]);
+        dfrobotAltitude = splitData[11];
+        dfrobotTime = getDateAndTime(splitData[12]);
+        dfrobotTTF = splitData[13];
+        dfrobotSat = splitData[14];
+        dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[15])) * 3.6); // m/s --> km/h
+        dfrobotCourse = splitData[16];
         
-        temperature1 = splitData[16];
-        temperature2 = splitData[17];
-        pressure1 = splitData[18];
-        pressure2 = splitData[19];
-        voltage = splitData[20];
-        altitudeByPressure = splitData[21];
+        temperature1 = splitData[17];
+        temperature2 = splitData[18];
+        pressure1 = splitData[19];
+        pressure2 = splitData[20];
+        voltage = splitData[21];
+        altitudeByPressure = splitData[22];
     }
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -87,13 +91,13 @@ public class HabString {
     
 ////////////////////////////////////////////////////////////////////////////////    
     
-    public String getLatPositionString(String lastValidData) {
+    public String getLastPositionString(String lastValidData) {
         if (dfrobotLatitude.equals("0.000000")) { //if this is true also longitude, altitude and time are invalid (no fix)
             String[] data = lastValidData.split(",");
             data[data.length - 1] = voltage;
-            lastValidData = "";
-            for (int i = 0; i < data.length; i++) {
-                lastValidData += data[i]; 
+            lastValidData = data[0];
+            for (int i = 1; i < data.length; i++) {
+                lastValidData += "," + data[i];
             }
             return lastValidData;
         } else {
@@ -109,11 +113,12 @@ public class HabString {
     
     public String getCleanString() {
         return ubloxTime + "," + ubloxLatitude + "," + ubloxLongitude + "," +
-               ubloxFixQuality + "," + ubloxSat + "," + ubloxAltitude + "," +
-               ubloxAltitudeM + "," + ubloxVerticalSpeed + "," + 
-               dfrobotLatitude + "," + dfrobotLongitude + "," + 
-               dfrobotAltitude + "," + dfrobotTime + "," + dfrobotTTF + "," + 
-               dfrobotSat + "," + dfrobotSpeed + "," + temperature1 + "," + 
+               ubloxFixQuality + "," + ubloxSat + "," + ubloxHorizDil + "," + 
+               ubloxAltitude + "," + ubloxAltitudeM + "," + 
+               ubloxVerticalSpeed + "," + dfrobotLatitude + "," + 
+               dfrobotLongitude + "," + dfrobotAltitude + "," + 
+               dfrobotTime + "," + dfrobotTTF + "," + dfrobotSat + "," + 
+               dfrobotSpeed + "," + dfrobotCourse + "," + temperature1 + "," + 
                temperature2 + "," + pressure1 + "," + pressure2 + "," + 
                voltage + "," + altitudeByPressure;
     }
@@ -122,12 +127,16 @@ public class HabString {
     
     private String getDateAndTime(String DateAndTime)
     {
-        if (DateAndTime.length() == 14) {
-            DateAndTime = DateAndTime.substring(0,13);
-            String fixedString = DateAndTime.substring(0, 7);
-            fixedString += String.valueOf(Integer.valueOf(DateAndTime.substring(8, 10)) + 2);
-            fixedString += DateAndTime.substring(11, DateAndTime.length());
-            return fixedString;
+        if (DateAndTime.length() == 18) {
+            if (DateAndTime.equals("00000000000000.000")) {
+                return "00000000000000";
+            } else {
+                DateAndTime = DateAndTime.substring(0,13);
+                String fixedString = DateAndTime.substring(0, 7);
+                fixedString += String.valueOf(Integer.valueOf(DateAndTime.substring(7, 10)) + 2);
+                fixedString += DateAndTime.substring(10, DateAndTime.length());
+                return fixedString;
+            }
         } else {
             if (!(DateAndTime.equals(""))) {
                 String fixedString = String.valueOf(Integer.valueOf(DateAndTime.substring(0, 1)) + 2);

@@ -3,9 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="1"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/PC/Documents/GitHub/vs/HAB-java-server-code/src/valmostratoServer/HabString.java</file>
-            <file>file:/C:/Users/PC/Documents/GitHub/vs/HAB-java-server-code/src/valmostratoServer/TCPServer.java</file>
-            <file>file:/C:/Users/PC/Documents/GitHub/vs/HAB-java-server-code/src/valmostratoServer/ValmostratoServer.java</file>
+            <file>file:/Users/zaff/Desktop/valmostrato_git/HAB-java-server-code/src/valmostratoServer/ValmostratoServer.java</file>
+            <file>file:/Users/zaff/Desktop/valmostrato_git/HAB-java-server-code/src/valmostratoServer/HabString.java</file>
+            <file>file:/Users/zaff/Desktop/valmostrato_git/HAB-java-server-code/src/valmostratoServer/TCPServer.java</file>
         </group>
     </open-files>
 </project-private>
