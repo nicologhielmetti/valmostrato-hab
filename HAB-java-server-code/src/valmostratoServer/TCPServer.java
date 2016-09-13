@@ -1,5 +1,5 @@
 
-// valmostrato server - last edit on 06/09/2016
+// valmostrato server - last edit on 08/09/2016
 
 package valmostratoServer;
 
@@ -37,7 +37,7 @@ public class TCPServer {
         DataOutputStream outToClient;
         BufferedReader inFromClient;
         
-        String lastValidData = "0.000000,0.000000,,M,0.000000,0.000,10.85";
+        String lastValidData = "0.000000,0.000000,,M,0.000000,0.000,00.00";
         
         System.out.println("Valmostrato Server on port: " + port + " is ON\n");
         
@@ -54,14 +54,13 @@ public class TCPServer {
                     
                     if (checkString(clientSentence)) {
                         clientSentence = "invalid data - " + clientSentence;
-                    }
-                    else {
+                    } else {
                         HabString hs = new HabString(clientSentence);
                         // Writing on data.txt file 
                         writeOnDataFile(hs.getCleanString());
                         // Updating lastpos.txt file and save in ram as the last
                         // valid data received
-                        lastValidData = hs.getLatPositionString(lastValidData);
+                        lastValidData = hs.getLastPositionString(lastValidData);
                         writeOnLastposFile(lastValidData);
                     }
                    
@@ -69,12 +68,10 @@ public class TCPServer {
                    
                    outToClient.writeBytes("OK");
                    connectionSocket.close();
-                }
-                catch (IOException e) {
+                } catch (IOException e) {
                    System.out.println("ERROR\n"); 
                 }
-            }
-            catch (IOException e){ 
+            } catch (IOException e){ 
                 System.out.println("ERROR\n");
             }
         }
@@ -112,7 +109,7 @@ public class TCPServer {
                 count++;
             }
         }
-        if (count != 20) {
+        if (count < 21) {
             return true;
         }
         return false;
