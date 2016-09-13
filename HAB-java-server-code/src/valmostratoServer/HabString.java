@@ -64,7 +64,7 @@ public class HabString {
         pressure1 = splitData[19];
         pressure2 = splitData[20];
         voltage = splitData[21];
-        altitudeByPressure = splitData[22];
+        altitudeByPressure = "";
     }
     
 ////////////////////////////////////////////////////////////////////////////////
