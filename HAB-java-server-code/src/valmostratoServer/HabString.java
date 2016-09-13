@@ -38,7 +38,7 @@ public class HabString {
         data = data.substring(6, data.length()-9);
         String[] splitData = data.split(",");
         
-        ubloxTime = splitData[0];
+        ubloxTime = getDateAndTime(splitData[0]);
         ubloxLatitude = cordinatesConversion(splitData[1]);
         ubloxLongitude = cordinatesConversion(splitData[2]);
         ubloxFixQuality = splitData[3];
@@ -50,7 +50,7 @@ public class HabString {
         dfrobotLongitude = cordinatesConversion(splitData[8]);
         dfrobotLatitude = cordinatesConversion(splitData[9]);
         dfrobotAltitude = splitData[10];
-        dfrobotTime = splitData[11];
+        dfrobotTime = getDateAndTime(splitData[11]);
         dfrobotTTF = splitData[12];
         dfrobotSat = splitData[13];
         dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[14])) * 3.6); // m/s --> km/h
@@ -128,17 +128,26 @@ public class HabString {
                 return "00000000000000";
             } else {
                 String fixedString = DateAndTime.substring(0, 7);
-                fixedString += String.valueOf(Integer.valueOf(DateAndTime.substring(7, 10)) + 2);
+                int hour = Integer.valueOf(DateAndTime.substring(7, 10)) + 2;
+                if (hour < 10) {
+                    fixedString += "0";
+                }
+                fixedString += String.valueOf(hour);
                 fixedString += DateAndTime.substring(10, DateAndTime.length() - 4);
                 return fixedString;
             }
         } else {
-            if (!(DateAndTime.equals(""))) {
-                String fixedString = String.valueOf(Integer.valueOf(DateAndTime.substring(0, 1)) + 2);
-                fixedString += DateAndTime.substring(2, 5);
-                return fixedString;
-            } else {
+            if (DateAndTime.equals("")) {
                 return "000000";
+            } else {
+                String fixedString = "";
+                int hour = Integer.valueOf(DateAndTime.substring(0, 2)) + 2;
+                if (hour < 10) {
+                    fixedString += "0";
+                }
+                fixedString += String.valueOf(hour);
+                fixedString += DateAndTime.substring(2, 6);
+                return fixedString;
             }
         }
     }
