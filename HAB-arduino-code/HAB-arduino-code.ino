@@ -281,15 +281,16 @@ void composeStringToSend(){
     INFOtoSend += findStr(GNGGA,6,8);
     INFOtoSend += findStr(GNGGA,9,11);
   } else
-    INFOtoSend = GNGGA;
+    INFOtoSend = "#GNGGA-ERROR";
   if (pubxCheck)
     INFOtoSend += findStr(PUBX,13,14);
   else
-    INFOtoSend += PUBX;
-  if(cgpsinfCheck)
+    INFOtoSend += "#PUBX-ERROR";
+  if(cgpsinfCheck){
     INFOtoSend += findStr(CGPSINF,1,8);
+  }
   else
-    INFOtoSend += CGPSINF;
+    INFOtoSend += "#ERROR-CGPSINF";
 }
 
 void readUbloxString() 
@@ -306,10 +307,8 @@ void readUbloxString()
   //} while(GNGGA.length() <= 1);
   Serial2.print("GNGGA : ");
   Serial2.println(GNGGA);
-  if(!checkStr(GNGGA,14)){
-    GNGGA = "#ERROR-GNGGA";
+  if(!checkStr(GNGGA,14))
     gnggaCheck = false;
-  }
   //do{
   while(Serial1.available()) Serial1.read();
   PUBX = "";
@@ -324,15 +323,13 @@ void readUbloxString()
   //} while(PUBX.length() <= 1);
   Serial2.print("PUBX : ");
   Serial2.println(PUBX);
-  if(!checkStr(PUBX,20)){
-    PUBX = "#ERROR-PUBX";
+  if(!checkStr(PUBX,20))
     pubxCheck = false;    
-  }
 }
 
 void readFromGPS(){
   //do{
-  //CGPSINF = "";
+  CGPSINF = "";
   while(Serial.available()) Serial.read(); //svuotamento buffer seriale
   while(!Serial1.available());
   Serial.println("AT+CGPSINF=0");  //invio comando per info gps
@@ -344,11 +341,8 @@ void readFromGPS(){
   //CGPSINF = ',' + CGPSINF;
   Serial2.print("CGPSINF : ");
   Serial2.println(CGPSINF);
-  if(!checkStr(CGPSINF,8)){
-    CGPSINF = "#ERROR-CGPSINF";
-    cgpsinfCheck = false;
-  }
-  
+  if(!checkStr(CGPSINF,8))
+    cgpsinfCheck = false;  
 }
 
 float fmap(float x, float in_min, float in_max, float out_min, float out_max)
@@ -422,6 +416,9 @@ void setup()
 
 void loop()
 {
+  gnggaCheck = true;
+  pubxCheck = true;
+  cgpsinfCheck = true;
   readFromGPS(); //leggere i dati dal GPS eliminando l'ultimo campo + le cifre decimali del tempo e della velocità.
   readUbloxString();
   composeStringToSend();
