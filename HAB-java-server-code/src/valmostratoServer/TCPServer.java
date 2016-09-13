@@ -109,7 +109,7 @@ public class TCPServer {
                 count++;
             }
         }
-        if (count < 21) {
+        if (count < 20) {
             return true;
         }
         return false;

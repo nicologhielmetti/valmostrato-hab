@@ -12,7 +12,6 @@ public class HabString {
     private final String ubloxLongitude;
     private final String ubloxFixQuality;
     private final String ubloxSat;
-    private final String ubloxHorizDil;
     private final String ubloxAltitude;
     private final String ubloxAltitudeM;
     private final String ubloxVerticalSpeed;
@@ -24,7 +23,6 @@ public class HabString {
     private final String dfrobotTTF;
     private final String dfrobotSat;
     private final String dfrobotSpeed;
-    private final String dfrobotCourse;
     
     private final String temperature1;
     private final String temperature2;
@@ -45,26 +43,24 @@ public class HabString {
         ubloxLongitude = cordinatesConversion(splitData[2]);
         ubloxFixQuality = splitData[3];
         ubloxSat = splitData[4];
-        ubloxHorizDil = splitData[5];
         ubloxAltitude = splitData[5];
         ubloxAltitudeM = splitData[6];
         ubloxVerticalSpeed = String.valueOf((Double.parseDouble(splitData[7])) * 3.6); // m/s --> km/h
         
-        dfrobotLongitude = cordinatesConversion(splitData[9]);
-        dfrobotLatitude = cordinatesConversion(splitData[10]);
-        dfrobotAltitude = splitData[11];
-        dfrobotTime = splitData[12];
-        dfrobotTTF = splitData[13];
-        dfrobotSat = splitData[14];
-        dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[15])) * 3.6); // m/s --> km/h
-        dfrobotCourse = splitData[16];
+        dfrobotLongitude = cordinatesConversion(splitData[8]);
+        dfrobotLatitude = cordinatesConversion(splitData[9]);
+        dfrobotAltitude = splitData[10];
+        dfrobotTime = splitData[11];
+        dfrobotTTF = splitData[12];
+        dfrobotSat = splitData[13];
+        dfrobotSpeed = String.valueOf((Double.parseDouble(splitData[14])) * 3.6); // m/s --> km/h
         
-        temperature1 = splitData[17];
-        temperature2 = splitData[18];
-        pressure1 = splitData[19];
-        pressure2 = splitData[20];
-        voltage = splitData[21];
-        altitudeByPressure = "";
+        temperature1 = splitData[15];
+        temperature2 = splitData[16];
+        pressure1 = splitData[17];
+        pressure2 = splitData[18];
+        voltage = splitData[19];
+        altitudeByPressure = splitData[20];
     }
     
 ////////////////////////////////////////////////////////////////////////////////
@@ -113,12 +109,12 @@ public class HabString {
     
     public String getCleanString() {
         return ubloxTime + "," + ubloxLatitude + "," + ubloxLongitude + "," +
-               ubloxFixQuality + "," + ubloxSat + "," + ubloxHorizDil + "," + 
+               ubloxFixQuality + "," + ubloxSat + "," + 
                ubloxAltitude + "," + ubloxAltitudeM + "," + 
                ubloxVerticalSpeed + "," + dfrobotLatitude + "," + 
                dfrobotLongitude + "," + dfrobotAltitude + "," + 
                dfrobotTime + "," + dfrobotTTF + "," + dfrobotSat + "," + 
-               dfrobotSpeed + "," + dfrobotCourse + "," + temperature1 + "," + 
+               dfrobotSpeed + "," + temperature1 + "," + 
                temperature2 + "," + pressure1 + "," + pressure2 + "," + 
                voltage + "," + altitudeByPressure;
     }
@@ -131,16 +127,15 @@ public class HabString {
             if (DateAndTime.equals("00000000000000.000")) {
                 return "00000000000000";
             } else {
-                DateAndTime = DateAndTime.substring(0,13);
                 String fixedString = DateAndTime.substring(0, 7);
                 fixedString += String.valueOf(Integer.valueOf(DateAndTime.substring(7, 10)) + 2);
-                fixedString += DateAndTime.substring(10, DateAndTime.length());
+                fixedString += DateAndTime.substring(10, DateAndTime.length() - 4);
                 return fixedString;
             }
         } else {
             if (!(DateAndTime.equals(""))) {
                 String fixedString = String.valueOf(Integer.valueOf(DateAndTime.substring(0, 1)) + 2);
-                fixedString += DateAndTime.substring(11, DateAndTime.length());
+                fixedString += DateAndTime.substring(2, 5);
                 return fixedString;
             } else {
                 return "000000";
