@@ -1,3 +1,4 @@
 # valmostrato-hab
 Valmostrsto HAB project
-Launch tracking -> http://valmostrato.altervista.org
+News article on 3BMeteo: https://goo.gl/Ox4PAU
+
